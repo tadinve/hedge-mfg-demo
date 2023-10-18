@@ -7,7 +7,7 @@ import serial
 import argparse
 import random
 # Define API endpoint and connection details
-API_URL = 'https://vmyreqq3bh.execute-api.us-east-1.amazonaws.com'
+API_URL = 'https://vmyreqq3bh.execute-api.us-east-1.amazonaws.com/devices'
 AUTH_CREDENTIALS = ('mailto:troy_cline@bmc.com', 'helixdemo2022')
 HEADERS = {'Content-Type': 'application/json'}
 PORT = "COM5"  # Serial port to connect to
@@ -80,21 +80,23 @@ def main(MAX_ITERATIONS):
 
     # Read and process data from the device for the defined number of iterations
     with open("com9.txt") as my_file:
-        read_val = my_file.readline()
-        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-       
-        # Check if any data was received from the device
-        if len(read_val) > 30:
+        read_values = my_file.readlines()
+        for read_val in read_values:
+            print(read_val)
+            current_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         
-            rec = f"{current_time}|{read_val}\n"
-            # Process the received data
-            try:
-                prev_position, idle_count = process_log_line(rec, DEFAULT_DEVICE_ID, prev_position, idle_count)
-            except Exception as e:
-                print(f"Ignoring record due to error: {e}")
+            # Check if any data was received from the device
+            if len(read_val) > 30:
+            
+                rec = f"{current_time}|{read_val}\n"
+                # Process the received data
+                try:
+                    prev_position, idle_count = process_log_line(rec, DEFAULT_DEVICE_ID, prev_position, idle_count)
+                except Exception as e:
+                    print(f"Ignoring record due to error: {e}")
 
-            print(rec)
-        time.sleep(2)
+                print(rec)
+            time.sleep(2)
 
 # Execute the main function when script is run
 if __name__ == "__main__":
